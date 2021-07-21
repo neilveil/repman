@@ -131,7 +131,7 @@ const callAction = async (action, { repository, host, branch }) => {
 
   // Show all unlisted repositories
   for (const repository of fs.readdirSync(ROOT_DIR)) {
-    if (!repositoryNames.includes(repository)) {
+    if (!repositoryNames.includes(repository) && repository !== AG_CONFIG) {
       COUNT_UNTRACKED++
       printStatus({ repository, branch: '--', status: 'UNTRACKED' })
     }
