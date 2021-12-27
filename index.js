@@ -11,18 +11,20 @@ var COUNT_CLONED = 0 // Clone branch if not exists
 var COUNT_PENDING = 0 // Code not committed
 var COUNT_BEHIND = 0 // Branches not pushed yet
 
-const AG_CONFIG = process.env.AG_CONFIG || 'auto-git.yml'
+const CONFIG_FILE = process.env.CONFIG_FILE || 'repman.yaml'
 
-if (!fs.existsSync(AG_CONFIG)) {
+if (!fs.existsSync(CONFIG_FILE)) {
   console.error('Config file not found!')
   process.exit(1)
 }
 
-const config = yaml.parse(fs.readFileSync(AG_CONFIG).toString()) || {}
+const config = yaml.parse(fs.readFileSync(CONFIG_FILE).toString()) || {}
 
 const ROOT_DIR = config.root_dir || process.cwd()
 const DEFAULT_BRANCH = config.default_branch || 'master'
 const REPOSITORIES = config.repositories || []
+
+const nextSection = '\n---------------\n'
 
 const printStatus = ({ repository, branch, status }) =>
   console.log(`${status}: ${repository}/${branch}`)
@@ -88,8 +90,10 @@ const callAction = async (action, { repository, host, branch }) => {
   }
 }
 
-;(async () => {
-  console.log(`ROOT: ${ROOT_DIR}\n`)
+const main = async () => {
+  console.log(`ROOT: ${ROOT_DIR}`)
+
+  console.log(nextSection)
 
   for (const repository in REPOSITORIES) {
     COUNT_REPOSITORIES++
@@ -131,19 +135,21 @@ const callAction = async (action, { repository, host, branch }) => {
 
   // Show all unlisted repositories
   for (const repository of fs.readdirSync(ROOT_DIR)) {
-    if (!repositoryNames.includes(repository) && repository !== AG_CONFIG) {
+    if (!repositoryNames.includes(repository) && repository !== CONFIG_FILE) {
       COUNT_UNTRACKED++
       printStatus({ repository, branch: '--', status: 'UNTRACKED' })
     }
   }
 
-  console.log()
+  console.log(nextSection)
 
   COUNT_UNTRACKED && console.log(`UNTRACKED: ${COUNT_UNTRACKED}`)
   COUNT_GITERR && console.log(`GITERR: ${COUNT_GITERR}`)
   COUNT_CLONED && console.log(`CLONED: ${COUNT_CLONED}`)
   COUNT_PENDING && console.log(`PENDING: ${COUNT_PENDING}`)
   COUNT_BEHIND && console.log(`BEHIND: ${COUNT_BEHIND}`)
+
+  console.log(nextSection)
 
   !(
     COUNT_UNTRACKED +
@@ -153,9 +159,9 @@ const callAction = async (action, { repository, host, branch }) => {
     COUNT_BEHIND
   ) && console.log(`Everything is in sync!`)
 
-  console.log()
-
   console.log(
-    `Tracking ${COUNT_BRANCHES} branches & ${COUNT_REPOSITORIES} repositories`
+    `Tracking ${COUNT_BRANCHES} branches from ${COUNT_REPOSITORIES} repositories`
   )
-})()
+}
+
+main()
