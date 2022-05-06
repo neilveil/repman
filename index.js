@@ -13,6 +13,8 @@ var COUNT_BEHIND = 0 // Branches not pushed yet
 
 const CONFIG_FILE = process.env.CONFIG_FILE || 'repman.yaml'
 
+const tmpDir = 'tmp'
+
 if (!fs.existsSync(CONFIG_FILE)) {
   console.error('Config file not found!')
   process.exit(1)
@@ -124,7 +126,7 @@ const main = async () => {
 
     // Show all unlisted branches
     for (const branch of fs.readdirSync(projectDirPath)) {
-      if (!branches.includes(branch)) {
+      if (!branches.includes(branch) && branch !== tmpDir) {
         COUNT_UNTRACKED++
         printStatus({ repository, branch, status: 'UNTRACKED' })
       }
@@ -135,7 +137,11 @@ const main = async () => {
 
   // Show all unlisted repositories
   for (const repository of fs.readdirSync(ROOT_DIR)) {
-    if (!repositoryNames.includes(repository) && repository !== CONFIG_FILE) {
+    if (
+      !repositoryNames.includes(repository) &&
+      repository !== CONFIG_FILE &&
+      repository !== tmpDir
+    ) {
       COUNT_UNTRACKED++
       printStatus({ repository, branch: '--', status: 'UNTRACKED' })
     }
