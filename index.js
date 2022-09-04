@@ -173,6 +173,8 @@ const main = async () => {
 
   // Show all unlisted repositories
   for (const repository of fs.readdirSync(ROOT_DIR)) {
+    if (fs.statSync(path.join(ROOT_DIR, repository)).isFile()) continue
+
     if (!repositoryNames.includes(repository) && repository !== CONFIG_FILE && repository !== tmpDir) {
       COUNT_UNTRACKED++
       printStatus({ repository, branch: '--', status: 'UNTRACKED' })
