@@ -1,9 +1,20 @@
 start:
 	@node index.js
 
-build:
+clean:
 	@rm -rf dst
-	@npx pkg index.js --targets node14-linux-x64 --out-path dst
 
-install: build
-	@sudo cp dst/index /usr/bin/repman
+build-linux:
+	@npx pkg index.js --targets node14-linux-x64 --output dst/linux
+
+build-windows:
+	@npx pkg index.js --targets node14-win-x64 --output dst/windows
+
+build-macos:
+	@npx pkg index.js --targets node14-macos-x64 --output dst/macos
+
+build: clean build-linux build-windows build-macos
+
+install: build-linux
+	@sudo cp dst/linux /usr/bin/repman
+	@echo Installed!
