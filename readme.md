@@ -29,16 +29,13 @@ Add a configuration file with name `repman.yaml` & run command `repman`. Voila!
 # root_dir: /home/ubuntu/repositories
 
 repositories:
-  - name: my-app-1
-    host: git@github.com:dummy-user/my-app-1.git
+  - name: dummy-repository-1
+    host: git@github.com:dummy-user/dummy-repository-1.git
     branches:
       - main
-      - api-server
-      - react-app
 
-  - name: my-app-2
-    host: git@github.com:dummy-user/my-app-2.git
+  - name: dummy-repository-2
+    host: git@github.com:dummy-user/dummy-repository-2.git
     branches:
-      - android-app
-      - ios-app
+      - main
 ```
