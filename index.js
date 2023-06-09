@@ -4,8 +4,6 @@ const simpleGit = require('simple-git')
 const yaml = require('yaml')
 const ajv = require('ajv')
 
-var COUNT_REPOSITORIES = 0 // Total number of repositories
-var COUNT_BRANCHES = 0 // Total number of branches
 var COUNT_UNTRACKED = 0 // Branch not found in config file
 var COUNT_CLONED = 0 // Clone branch if not exists
 var COUNT_PENDING = 0 // Code not committed
@@ -16,7 +14,7 @@ const tmpDir = 'tmp'
 
 const CONFIG_FILE = process.env.CONFIG_FILE || 'repman.yaml'
 
-console.log(`REPMAN | v1.0.0\n`)
+console.log(`REPMAN | v2.0.0\n`)
 
 // Check if config file exists
 if (!fs.existsSync(CONFIG_FILE)) {
@@ -46,17 +44,13 @@ const validate = new ajv().compile({
             nullable: false,
             minLength: 1
           },
-          branches: {
-            type: 'array',
-            minItems: 1,
-            uniqueItems: true,
-            items: {
-              type: 'string',
-              minLength: 1
-            }
+          branch: {
+            type: 'string',
+            nullable: false,
+            minLength: 1
           }
         },
-        required: ['name', 'host', 'branches']
+        required: ['name', 'host', 'branch']
       }
     }
   },
@@ -74,42 +68,47 @@ if (!isValid) {
 const ROOT_DIR = config.root_dir || process.cwd()
 const REPOSITORIES = config.repositories || []
 
+if (!fs.existsSync(ROOT_DIR)) fs.mkdirSync(ROOT_DIR, { recursive: true })
+else if (fs.statSync(ROOT_DIR).isFile()) throw new Error('A file with root directory name exists!')
+
 const nextSection = '\n---------------\n'
 
-const printStatus = ({ repository, branch, status }) => console.log(`${status}: ${repository}/${branch}`)
+const printStatus = (name, status) => console.log(`${name} -> ${status}`)
 
-const gitHandler = async (action, { repository, host, branch }) => {
+const gitHandler = async (action, { name, host, branch }) => {
   try {
-    if (!repository || !host || !branch) throw new Error('Invalid input!')
+    if (!name || !host || !branch) throw new Error('Invalid input!')
 
-    const dir = action === 'clone' ? path.join(ROOT_DIR, repository) : path.join(ROOT_DIR, repository, branch)
+    var git, branches, currentBranch
 
-    fs.mkdirSync(dir, { recursive: true })
+    if (action === 'clone') git = simpleGit(ROOT_DIR)
+    else {
+      git = simpleGit(path.join(ROOT_DIR, name))
+      branches = Object.values((await git.branch()).branches)
+      currentBranch = branches.find(branch => branch.current === true)
 
-    const git = simpleGit(dir)
+      console.log(branches)
+    }
 
     switch (action) {
       case 'clone':
-        await git.clone(host, branch, {
+        await git.clone(host, name, {
           '--single-branch': null,
           '--branch': branch
         })
         COUNT_CLONED++
-        printStatus({ repository, branch, status: 'CLONED' })
+        printStatus(name, 'cloned')
         break
 
       case 'isPending':
         const isPending = (await git.status()).files.length
         if (isPending) {
           COUNT_PENDING++
-          printStatus({ repository, branch, status: 'PENDING' })
+          printStatus(name, 'pending')
         }
         break
 
       case 'isBehind':
-        const branches = Object.values((await git.branch()).branches)
-
-        const currentBranch = branches.find(branch => branch.current === true)
         const remoteBranches = branches.filter(
           branch => branch.name.startsWith('remotes/') && branch.name.endsWith('/' + currentBranch.name)
         )
@@ -121,52 +120,34 @@ const gitHandler = async (action, { repository, host, branch }) => {
           remoteBranches.find(branch => branch.commit !== currentBranch.commit)
         ) {
           COUNT_BEHIND++
-          printStatus({ repository, branch, status: 'BEHIND' })
+          printStatus(name, 'behind')
         }
         break
     }
   } catch (error) {
     COUNT_ERROR++
-    printStatus({ repository, branch, status: 'GITERR' })
+    printStatus(name, 'error!')
     console.error(`${error.message}\n`)
   }
 }
 
 const main = async () => {
-  console.log(`ROOT: ${ROOT_DIR}`)
+  console.log(`ROOT_DIR: ${ROOT_DIR}`)
 
   console.log(nextSection)
 
-  COUNT_REPOSITORIES = REPOSITORIES.length
+  for (const { name, host, branch } of REPOSITORIES) {
+    const projectPath = path.join(ROOT_DIR, name)
 
-  for (const { name: repository, host, branches } of REPOSITORIES) {
-    const projectDirPath = path.join(ROOT_DIR, repository)
-
-    fs.mkdirSync(projectDirPath, { recursive: true })
-
-    COUNT_BRANCHES += branches.length
-
-    for (const branch of branches) {
-      const branchDirPath = path.join(projectDirPath, branch)
-
-      if (fs.existsSync(branchDirPath)) {
-        if (!fs.statSync(branchDirPath).isDirectory()) {
-          console.log(`"${branchDirPath}" should be a directory!`)
-          process.exit(1)
-        }
-
-        await gitHandler('isPending', { repository, branch, host })
-        await gitHandler('isBehind', { repository, branch, host })
-      } else await gitHandler('clone', { repository, branch, host })
-    }
-
-    // Show all unlisted branches
-    for (const branch of fs.readdirSync(projectDirPath)) {
-      if (!branches.includes(branch) && branch !== tmpDir) {
-        COUNT_UNTRACKED++
-        printStatus({ repository, branch, status: 'UNTRACKED' })
+    if (fs.existsSync(projectPath)) {
+      if (!fs.statSync(projectPath).isDirectory()) {
+        console.log(`"${projectPath}" should be a directory!`)
+        process.exit(1)
       }
-    }
+
+      await gitHandler('isPending', { name, branch, host })
+      await gitHandler('isBehind', { name, branch, host })
+    } else await gitHandler('clone', { name, branch, host })
   }
 
   const repositoryNames = REPOSITORIES.map(({ name }) => name)
@@ -177,24 +158,24 @@ const main = async () => {
 
     if (!repositoryNames.includes(repository) && repository !== CONFIG_FILE && repository !== tmpDir) {
       COUNT_UNTRACKED++
-      printStatus({ repository, branch: '--', status: 'UNTRACKED' })
+      printStatus(repository, 'untracked')
     }
   }
 
   console.log(nextSection)
 
-  COUNT_UNTRACKED && console.log(`UNTRACKED: ${COUNT_UNTRACKED}`)
-  COUNT_ERROR && console.log(`GITERR: ${COUNT_ERROR}`)
-  COUNT_CLONED && console.log(`CLONED: ${COUNT_CLONED}`)
-  COUNT_PENDING && console.log(`PENDING: ${COUNT_PENDING}`)
-  COUNT_BEHIND && console.log(`BEHIND: ${COUNT_BEHIND}`)
+  COUNT_UNTRACKED && console.log(`Untracked: ${COUNT_UNTRACKED}`)
+  COUNT_ERROR && console.log(`Errors: ${COUNT_ERROR}`)
+  COUNT_CLONED && console.log(`Cloned: ${COUNT_CLONED}`)
+  COUNT_PENDING && console.log(`Pending: ${COUNT_PENDING}`)
+  COUNT_BEHIND && console.log(`Behind: ${COUNT_BEHIND}`)
 
   console.log(nextSection)
 
   !(COUNT_UNTRACKED + COUNT_ERROR + COUNT_CLONED + COUNT_PENDING + COUNT_BEHIND) &&
     console.log(`Everything is in sync!`)
 
-  console.log(`Tracking ${COUNT_BRANCHES} branches from ${COUNT_REPOSITORIES} repositories`)
+  console.log(`Tracking ${REPOSITORIES.length} projects!`)
 }
 
 main()

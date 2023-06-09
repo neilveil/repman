@@ -25,17 +25,14 @@ Add a configuration file with name `repman.yaml` & run command `repman`. Voila!
 ## Configuration file
 
 ```yaml
-# Optional, default is current directory
-# root_dir: /home/ubuntu/repositories
+root_dir: ./example
 
 repositories:
   - name: dummy-repository-1
-    host: git@github.com:dummy-user/dummy-repository-1.git
-    branches:
-      - main
+    host: git@github.com:neilveil/dummy-repository-1.git
+    branch: main
 
   - name: dummy-repository-2
-    host: git@github.com:dummy-user/dummy-repository-2.git
-    branches:
-      - main
+    host: git@github.com:neilveil/dummy-repository-2.git
+    branch: main
 ```
