@@ -84,10 +84,28 @@ const gitHandler = async (action, { name, host, branch }) => {
     if (action === 'clone') git = simpleGit(ROOT_DIR)
     else {
       git = simpleGit(path.join(ROOT_DIR, name))
+
+      // // Local branches
+      // console.log(
+      //   Object.values((await git.branchLocal()).branches).reduce((t, x) => ({ ...t, [x.name]: x.commit }), {})
+      // )
+
+      // // Remote branches
+      // console.log(
+      //   (await git.listRemote(['--heads']))
+      //     .split('\n')
+      //     .filter(x => x)
+      //     .map(x => x.split('\trefs/heads/'))
+      //     .filter(x => x.length === 2)
+      //     .map(([commit, branch]) => ({
+      //       commit: commit.slice(0, 7),
+      //       branch
+      //     }))
+      //     .reduce((t, x) => ({ ...t, [x.branch]: x.commit }), {})
+      // )
+
       branches = Object.values((await git.branch()).branches)
       currentBranch = branches.find(branch => branch.current === true)
-
-      console.log(branches)
     }
 
     switch (action) {
@@ -130,6 +148,10 @@ const gitHandler = async (action, { name, host, branch }) => {
     console.error(`${error.message}\n`)
   }
 }
+
+//
+// Main
+//
 
 const main = async () => {
   console.log(`ROOT_DIR: ${ROOT_DIR}`)
