@@ -85,25 +85,6 @@ const gitHandler = async (action, { name, host, branch }) => {
     else {
       git = simpleGit(path.join(ROOT_DIR, name))
 
-      // // Local branches
-      // console.log(
-      //   Object.values((await git.branchLocal()).branches).reduce((t, x) => ({ ...t, [x.name]: x.commit }), {})
-      // )
-
-      // // Remote branches
-      // console.log(
-      //   (await git.listRemote(['--heads']))
-      //     .split('\n')
-      //     .filter(x => x)
-      //     .map(x => x.split('\trefs/heads/'))
-      //     .filter(x => x.length === 2)
-      //     .map(([commit, branch]) => ({
-      //       commit: commit.slice(0, 7),
-      //       branch
-      //     }))
-      //     .reduce((t, x) => ({ ...t, [x.branch]: x.commit }), {})
-      // )
-
       branches = Object.values((await git.branch()).branches)
       currentBranch = branches.find(branch => branch.current === true)
     }
@@ -117,6 +98,10 @@ const gitHandler = async (action, { name, host, branch }) => {
         COUNT_CLONED++
         printStatus(name, 'cloned')
         break
+
+      case 'isTracked':
+        if (currentBranch.name === branch) return true
+        else return false
 
       case 'isPending':
         const isPending = (await git.status()).files.length
@@ -144,7 +129,7 @@ const gitHandler = async (action, { name, host, branch }) => {
     }
   } catch (error) {
     COUNT_ERROR++
-    printStatus(name, 'error!')
+    printStatus(name, 'error')
     console.error(`${error.message}\n`)
   }
 }
@@ -167,8 +152,13 @@ const main = async () => {
         process.exit(1)
       }
 
-      await gitHandler('isPending', { name, branch, host })
-      await gitHandler('isBehind', { name, branch, host })
+      if (await gitHandler('isTracked', { name, branch, host })) {
+        await gitHandler('isPending', { name, branch, host })
+        await gitHandler('isBehind', { name, branch, host })
+      } else {
+        printStatus(name, 'error')
+        console.error('Untracked branch checked out!')
+      }
     } else await gitHandler('clone', { name, branch, host })
   }
 
@@ -176,8 +166,7 @@ const main = async () => {
 
   // Show all unlisted repositories
   for (const repository of fs.readdirSync(ROOT_DIR)) {
-    if (fs.statSync(path.join(ROOT_DIR, repository)).isFile()) continue
-
+    // Untracked files & directories
     if (!repositoryNames.includes(repository) && repository !== CONFIG_FILE && repository !== tmpDir) {
       COUNT_UNTRACKED++
       printStatus(repository, 'untracked')
