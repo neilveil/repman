@@ -8,12 +8,14 @@ Linux
 
 ```bash
 wget https://neilveil.github.io/repman/bin/linux.bin -O /usr/bin/repman
+chmod +x /usr/bin/repman
 ```
 
 MacOS
 
 ```bash
 wget https://neilveil.github.io/repman/bin/windows.exe -O C:\Windows\repman
+chmod +x /usr/bin/repman
 ```
 
 ```powershell

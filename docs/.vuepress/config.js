@@ -8,12 +8,13 @@ export default defineUserConfig({
   description: 'CLI based multiple git repository tracking & management tool',
   theme: defaultTheme({
     logo: 'logo.png',
-    navbar: ['/', '/installation/', '/docs/']
+    navbar: ['/', '/installation/', '/docs/'],
+    lastUpdated: false
   }),
   alias: {
     components: path.resolve(__dirname, 'components')
   },
-  port: 5000,
+  port: 5500,
   base: '/repman',
   dest: 'build',
   bundler: viteBundler()
