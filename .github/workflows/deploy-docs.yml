@@ -1,0 +1,56 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-gh-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install packages
+        run: npm i
+
+      - name: Build
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+        run: npm run build
+
+      - name: Move build to tmp
+        run: cp -r build tmp
+
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          clean: false
+
+      - name: Remove everything from root
+        run: git reset --hard
+
+      - name: Move all assets from tmp to root
+        run: cp -rf tmp/* .
+
+      - name: Remove unused directory
+        run: rm -rf node_modules build tmp
+
+      - name: Commit
+        run: git add .
+      - run: git config --global user.name "${GITHUB_ACTOR}"
+      - run: git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+      - run: git commit --amend --no-edit
+      - run: git push origin -f gh-pages
