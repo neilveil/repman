@@ -1,10 +1,10 @@
 root_dir: ./example
 
 repositories:
-  - name: dummy-repository-1
-    host: git@github.com:neilveil/dummy-repository-1.git
-    branch: main
+  - name: repman-1
+    host: git@github.com:neilveil/repman.git
+    branch: master
 
-  - name: dummy-repository-2
-    host: git@github.com:neilveil/dummy-repository-2.git
-    branch: main
+  - name: repman-2
+    host: git@github.com:neilveil/repman.git
+    branch: master

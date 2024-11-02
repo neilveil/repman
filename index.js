@@ -12,18 +12,18 @@ var COUNT_ERROR = 0 // Git error
 
 const tmpDir = 'tmp'
 
-const CONFIG_FILE = process.env.CONFIG_FILE || 'repman.yaml'
+const REPMAN_CONFIG_FILE = process.env.REPMAN_CONFIG_FILE || 'repman.yaml'
 
 console.log(`REPMAN | v2.0.0\n`)
 
 // Check if config file exists
-if (!fs.existsSync(CONFIG_FILE)) {
+if (!fs.existsSync(REPMAN_CONFIG_FILE)) {
   console.error('Config file not found!')
   process.exit(1)
 }
 
 // Load config file
-const config = yaml.parse(fs.readFileSync(CONFIG_FILE).toString()) || {}
+const config = yaml.parse(fs.readFileSync(REPMAN_CONFIG_FILE).toString()) || {}
 
 // Config file schema
 const validate = new ajv().compile({
@@ -167,7 +167,7 @@ const main = async () => {
   // Show all unlisted repositories
   for (const repository of fs.readdirSync(ROOT_DIR)) {
     // Untracked files & directories
-    if (!repositoryNames.includes(repository) && repository !== CONFIG_FILE && repository !== tmpDir) {
+    if (!repositoryNames.includes(repository) && repository !== REPMAN_CONFIG_FILE && repository !== tmpDir) {
       COUNT_UNTRACKED++
       printStatus(repository, 'untracked')
     }

@@ -1,21 +1,23 @@
 # Repman
 
+CLI based multiple git repository tracking & management tool.
+
 ## Installation
 
 Linux
 
 ```bash
-wget http://s3.amazonaws.com/joahquin/repman/v1.0.0/linux -O /usr/bin/repman
+wget https://neilveil.github.io/repman/bin/linux.bin -O /usr/bin/repman
 ```
 
 MacOS
 
 ```bash
-wget http://s3.amazonaws.com/joahquin/repman/v1.0.0/macos -O /usr/bin/repman
+wget https://neilveil.github.io/repman/bin/windows.exe -O C:\Windows\repman
 ```
 
 ```powershell
-wget http://s3.amazonaws.com/joahquin/repman/v1.0.0/windows.exe -O C:\Windows\repman
+wget https://neilveil.github.io/repman/bin/macos.bin -O /usr/bin/repman
 ```
 
 ## Usage

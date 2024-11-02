@@ -1,4 +1,9 @@
-dst
+*.bin
+*.exe
+build
+dist
+docs/.vuepress/.cache
+docs/.vuepress/.temp
 example
 node_modules
 tmp
