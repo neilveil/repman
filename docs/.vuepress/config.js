@@ -9,7 +9,8 @@ export default defineUserConfig({
   theme: defaultTheme({
     logo: 'logo.png',
     navbar: ['/', '/installation/', '/docs/'],
-    lastUpdated: false
+    lastUpdated: false,
+    contributors: false
   }),
   alias: {
     components: path.resolve(__dirname, 'components')
