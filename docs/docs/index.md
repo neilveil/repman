@@ -2,7 +2,7 @@
 
 Add repman configuration file with name `repman.yaml` & run command `repman`. Voila!
 
-## Repman Configuration File
+## Configuration File
 
 Add `repman.yaml` file.
 
@@ -34,7 +34,7 @@ File structure
   - /my-repo-2
 ```
 
-## Root dir key usage
+## Root directory
 
 File structure
 

@@ -10,8 +10,14 @@ export default defineUserConfig({
     logo: 'logo.png',
     navbar: ['/', '/installation/', '/docs/'],
     lastUpdated: false,
-    contributors: false
+    contributors: false,
   }),
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: 'logo.png' }],
+    ['meta', { name: 'theme-color', content: '#7cb342' }],
+    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
+  ],
   alias: {
     components: path.resolve(__dirname, 'components')
   },

@@ -8,6 +8,7 @@ description: Repman installation for Linux, Windows & MacOS.
 ## Linux
 
 ```bash:no-line-numbers
+apt install wget
 wget https://neilveil.github.io/repman/bin/linux.bin -O /usr/bin/repman
 chmod +x /usr/bin/repman
 ```
@@ -21,6 +22,6 @@ wget https://neilveil.github.io/repman/bin/windows.exe -O C:\Windows\repman
 ## MacOS
 
 ```bash:no-line-numbers
-wget https://neilveil.github.io/repman/bin/macos.bin -O /usr/bin/repman
-chmod +x /usr/bin/repman
+brew install wget
+wget https://neilveil.github.io/repman/bin/macos.bin -O /usr/local/bin/repman
 ```

@@ -4,22 +4,25 @@ CLI based multiple git repository tracking & management tool.
 
 ## Installation
 
-Linux
+## Linux
 
 ```bash
+apt install wget
 wget https://neilveil.github.io/repman/bin/linux.bin -O /usr/bin/repman
 chmod +x /usr/bin/repman
 ```
 
-MacOS
+## Windows
 
-```bash
+```sh
 wget https://neilveil.github.io/repman/bin/windows.exe -O C:\Windows\repman
-chmod +x /usr/bin/repman
 ```
 
-```powershell
-wget https://neilveil.github.io/repman/bin/macos.bin -O /usr/bin/repman
+## MacOS
+
+```bash
+brew install wget
+wget https://neilveil.github.io/repman/bin/macos.bin -O /usr/local/bin/repman
 ```
 
 ## Usage
