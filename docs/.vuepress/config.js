@@ -14,6 +14,7 @@ export default defineUserConfig({
     components: path.resolve(__dirname, 'components')
   },
   port: 5000,
+  base: '/repman',
   dest: 'build',
   bundler: viteBundler()
 })
