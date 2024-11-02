@@ -1,0 +1,3 @@
+import comp from "/home/runner/work/repman/repman/docs/.vuepress/.temp/pages/index.html.vue"
+const data = JSON.parse("{\"path\":\"/\",\"title\":\"Home\",\"lang\":\"en-US\",\"frontmatter\":{\"home\":true,\"title\":\"Home\",\"heroImage\":\"logo.png\",\"heroText\":\"Effortlessly Manage All Your Repositories\",\"tagline\":\"CLI based multiple git repository tracking & management tool.\",\"actions\":[{\"text\":\"Installation\",\"link\":\"/installation/\",\"type\":\"primary\"},{\"text\":\"Docs\",\"link\":\"/docs/\",\"type\":\"secondary\"}]},\"headers\":[],\"git\":{\"updatedTime\":1730549182000,\"contributors\":[{\"name\":\"Neil Arya\",\"email\":\"neilarya.in@gmail.com\",\"commits\":1}]},\"filePathRelative\":\"index.md\"}")
+export { comp, data }

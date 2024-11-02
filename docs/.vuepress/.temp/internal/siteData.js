@@ -1,0 +1,1 @@
+export const siteData = JSON.parse("{\"base\":\"/\",\"lang\":\"en-US\",\"title\":\"Repman\",\"description\":\"CLI based multiple git repository tracking & management tool\",\"head\":[],\"locales\":{}}")
