@@ -35,11 +35,11 @@ Add a configuration file with name `repman.yaml` & run command `repman`. Voila!
 root_dir: ./example
 
 repositories:
-  - name: dummy-repository-1
-    host: git@github.com:neilveil/dummy-repository-1.git
-    branch: main
+    - name: dummy-repository-1
+      host: git@github.com:neilveil/dummy-repository-1.git
+      branch: main
 
-  - name: dummy-repository-2
-    host: git@github.com:neilveil/dummy-repository-2.git
-    branch: main
+    - name: dummy-repository-2
+      host: git@github.com:neilveil/dummy-repository-2.git
+      branch: main
 ```
